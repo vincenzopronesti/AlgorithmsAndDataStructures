@@ -76,6 +76,135 @@ class BinaryTree:
             f.rightSon = None
             return nt
 
+    def DFSPreOrder(self):
+        """Permette di restituire una lista di
+        elementi ottenuta da una visita
+        in profondità dell'albero."""
+        res = []
+        stack = PilaArrayList()
+        if self.root != None:
+            stack.push(self.root)
+        while not stack.isEmpty():
+            current = stack.pop()
+            res.append(current.info)
+            if current.rightSon != None:
+                stack.push(current.rightSon)
+            if current.leftSon != None:
+                stack.push(current.leftSon)
+        return res
+
+    def BFS(self):
+        """Permette di restituire una lista di
+        elementi ottenuta da una visita
+        in ampiezza dell'albero."""
+        res = []
+        q = CodaArrayList_deque()
+        if self.root != None:
+            q.enqueue(self.root)
+        while not q.isEmpty():
+            current = q.dequeue()
+            res.append(current.info)
+            if current.leftSon != None:
+                q.enqueue(current.leftSon)
+            if current.rightSon != None:
+                q.enqueue(current.rightSon)
+        return res
+
+    def DFSInOrder(self):
+        """restituisce una lista di
+        elementi ottenuta da una visita
+        in profondità (in-order) dell'albero
+
+        bisogna visitare un nodo (inserirlo nella lista da restituire) 
+        solo dopo aver visitato il figlio sinistro, 
+        quindi devo 'attraversare' il nodo in questione due volte, 
+        una volta per passare ai figli e l'altra per visitarlo,
+        per capire quante volte ho già incontrato il nodo che sto considerando gli associo 
+        un valore booleano (False se è la prima volta, True se è la seconda)"""
+        if self.root != None:
+            res = []
+            stack = PilaArrayList()
+            stack.push((self.root, False))
+            while not stack.isEmpty():
+                current, flag = stack.pop()
+                if flag:
+                    res.append(current.info)
+                else:
+                    if current.rightSon != None:
+                        stack.push((current.rightSon, False))
+                    stack.push((current, True))
+                    if current.leftSon != None:
+                        stack.push((current.leftSon, False))
+            return res
+        else:
+            return 
+
+    def DFSPostOrder(self):
+        """restituisce una lista di
+        elementi ottenuta da una visita
+        in profondità (post-order) dell'albero
+
+        è concettualmente uguale a DFSInOrder, cambia ovviamente l'ordine con
+        cui inserisco i nodi nello stack"""
+        if self.root != None:
+            res = []
+            stack = PilaArrayList()
+            stack.push((self.root, False))
+            while not stack.isEmpty():
+                current, flag = stack.pop()
+                if flag:
+                    res.append(current.info)
+                else:
+                    stack.push((current, True))
+                    if current.rightSon != None:
+                        stack.push((current.rightSon, False))
+                    if current.leftSon != None:
+                        stack.push((current.leftSon, False))
+            return res
+        else:
+            return 
+    
+
+    # tutto il codice che segue è usato per il test
+
+    def InOrder(self):
+        """implementazione ricorsiva della visita in profondità in-order"""
+        res_left = []
+        res = []
+        res_right = []
+        if self.root != None:
+            if self.root.leftSon != None:
+                left = self.cut(self.root.leftSon)
+                res_left = left.InOrder()
+                self.insertAsLeftSubTree(self.root, left)
+            res.append(self.root.info)
+            if self.root.rightSon != None:
+                right = self.cut(self.root.rightSon)
+                res_right = right.InOrder()
+                self.insertAsRightSubTree(self.root, right)
+            return res_left + res + res_right
+        else:
+            return 
+
+    def PostOrder(self):
+        """implementazione ricorsiva della visita in profondità post-order"""
+        res_left = []
+        res = []
+        res_right = []
+        if self.root != None:
+            if self.root.leftSon != None:
+                left = self.cut(self.root.leftSon)
+                res_left = left.PostOrder()
+                self.insertAsLeftSubTree(self.root, left)
+            if self.root.rightSon != None:
+                right = self.cut(self.root.rightSon)
+                res_right = right.PostOrder()
+                self.insertAsRightSubTree(self.root, right)
+            res.append(self.root.info)
+            return res_left + res_right + res
+        else:
+            return
+
     def printF(self):
         """Permette di stampare l'albero. Per farlo si usa una pila di appoggio"""
         stack = StackArrayList()
