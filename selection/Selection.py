@@ -90,14 +90,112 @@ def recursiveQuickSelectRand(l, left, right, position):
 
 # End of quickSelect
 
+
+# QUICKSELECT DETERMINISTICO
+""" Divide l'input in gruppi di 5 (tranne al piu' l'ultimo gruppo), e per ciascun
+    gruppo calcola il mediano.
+    Quindi calcola ricorsivamente il mediano dei mediani, ed utilizza quello come perno.
+    Si puo' dimostrare che sia la sottosequenza sinistra che quella destra contengono
+    al piu' 7n/10 elementi.
+    Quindi il tempo d'esecuzione dell'algoritmo e' T(n)=O(n)+T(n/5)+T(7n/10)=O(n)
+"""
+def quickSelectDet(l, position, minLen, whoami="QuickSelectDet"):
+    if position <= 0 or position > len(l):
+        return None
+    return recursiveQuickSelectDet(l, 0, len(l) - 1, position, minLen, whoami)
+
+def recursiveQuickSelectDet(l, left, right, position, minLen, whoami):
+    if printSwitch.dumpOperations:
+        condOutput(whoami, "recursiveQuickSelectDet({},{},{},{})".format(left, right, position, minLen) + "\n" + "[" + "- "*left + str(l[left:right + 1])[1:-1] + "- "*(len(l) - right - 1) + "]")
+
+    if left == right:
+        return l[left]
+
+    # si usa stop per decidere quando smettere di ricorrere ed utilizzare un algoritmo diverso
+    if len(l) < minLen:
+        med = trivialSelect(l[ left: right + 1], position - left)
+        if printSwitch.dumpOperations:
+            condOutput(whoami, "return:" + str(med))
+        return med
+
+    # compute groups of five
+    numElem = right - left + 1
+    numGroups = int(ceil(numElem / 5.0))
+    median = []
+    for i in range(0, numGroups):
+        dimGroup = (5) if (i < numGroups - 1 or numElem % 5 == 0) else (numElem - (numGroups - 1) * 5)
+        a = left + i * 5
+        b = left + i * 5 + dimGroup - 1
+
+        if printSwitch.dumpOperations:
+            condOutput(whoami, "dimGroup: " + str(dimGroup) + "\n" + "Compute median in group {}".format(l[a:b + 1]))
+        m = trivialSelect(l[a:b + 1], int(ceil(dimGroup / 2.0)))
+        median.append(m)
+
+    if printSwitch.dumpOperations:
+        condOutput(whoami, "Compute the median of " + str(median))
+    vperno = quickSelectDet(median, ceil(len(median)/2), minLen, "Median Recursion on list {}".format(median))
+
+    if printSwitch.dumpOperations:
+        condOutput(whoami, "Partitioning wrt " + str(vperno))
+    perno = partitionDet(l, left, right, vperno)  # Watch: this is a new function which takes  the pivot as the parameter
+
+    posperno = perno + 1
+    if posperno == position:
+        if printSwitch.dumpOperations:
+            condOutput(whoami, "return " + str(l[perno]))
+        return l[perno]
+    if posperno > position:
+        if printSwitch.dumpOperations:
+            condOutput(whoami, "Recursion on the LEFT partition.")
+        return recursiveQuickSelectDet(l, left, perno - 1, position, minLen, whoami)
+    else:
+        if printSwitch.dumpOperations:
+            condOutput(whoami, "Recursion on the RIGHT partition.")
+        return recursiveQuickSelectDet(l, perno + 1, right, position, minLen, whoami)
+
+def partitionDet(l, left, right, pivot):
+    inf = left
+    sup = right
+
+    while True:
+        while inf <= right and l[inf] <= pivot:
+            if l[inf] == pivot and l[left] != pivot:
+                l[left], l[inf] = l[inf], l[left]
+            else:
+                inf += 1
+
+        while sup >= 0 and l[sup] > pivot:
+            sup -= 1
+
+        if inf < sup:
+            l[inf], l[sup] = l[sup], l[inf]
+        else:
+            break
+
+    l[left], l[sup] = l[sup], l[left]
+
+    # if printSwitch.dumpOperations:
+    #    print("- "*left + str(l[left:right + 1]) + " -"*(len(l) - right - 1))
+
+    return sup
+
+# For debugging info
+oldstate = ""
+def condOutput(whoami, msg):
+    global oldstate
+    if oldstate != whoami:
+        print("\t" + whoami)
+        oldstate = whoami
+    print(msg)
+
 if __name__ == '__main__':
     basel = [5, 34, 26, 1, 4, 2, 17, 50, 41]
-    k = 4
+    k = 5
     l = list(basel)
     print(l)
     #print(trivialSelect(l,k))
     #print(sortSelect(l, k))
-    print(heapSelect(l, k))
-    #print(quickSelectRand(l, k))
-
-    
+    #print(heapSelect(l, k))
+    print(quickSelectRand(l, k))
+    #print(quickSelectDet(l, k, 3))
