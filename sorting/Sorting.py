@@ -2,7 +2,10 @@
 
 import sys
 sys.path.append("/home/vi/Desktop/git/AlgorithmsAndDataStructures")
-from HeapMax import HeapMax
+if __name__ == "__main__":
+   from HeapMax import HeapMax
+else:
+   from .HeapMax import HeapMax
 from __init__ import printSwitch
 from stack.Stack import StackArrayList as Stack #Local renaming. Sometimes useful! :)
 import math
