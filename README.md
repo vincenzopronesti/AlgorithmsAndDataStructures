@@ -5,7 +5,7 @@
 - `sorting` contains different sorting algorithm implemented in Python: selectionSort, insertionSort, bubbleSort, mergeSort, quickSort, heapSort and radixSort.
 - `selection` contains some selection algorithms.
 - `trees` contains binary tree, n-tree, AVL tree implementations. 
-- `hashTable` contains
+- `hashTable` contains hash table implementations.
 - `unionFind` contains different union find implementations like quickUnion and quickFind
 - `priorityQueue` contains priority queues implemented with different kinds of heaps.
 - `graph` contains graph implementations based on adjacency list, adjacency matrix and incidence lists.
