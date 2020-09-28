@@ -1,4 +1,9 @@
-import LinkedList
+if __name__ == "__main__":
+	import LinkedList
+else:
+	import sys
+	sys.path.append("/home/vi/Desktop/git/AlgorithmsAndDataStructures")
+	from list import LinkedList
 
 class DoubleRecord(LinkedList.Record):
     def __init__(self,elem):
